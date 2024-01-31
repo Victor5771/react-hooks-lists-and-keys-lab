@@ -32,8 +32,14 @@ test("renders a <span> for each technology passed in as a prop", () => {
       technologies={project.technologies}
     />
   );
+
   for (const technology of project.technologies) {
     const span = screen.queryByText(technology);
+
+    if (!span) {
+      console.error(`Failed to find a <span> for technology: ${technology}`);
+    }
+
     expect(span).toBeInTheDocument();
     expect(span.tagName).toBe("SPAN");
   }

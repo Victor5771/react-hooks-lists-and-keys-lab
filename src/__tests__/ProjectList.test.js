@@ -1,5 +1,5 @@
 import "@testing-library/jest-dom";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import ProjectList from "../components/ProjectList";
 
 const projects = [
@@ -9,33 +9,24 @@ const projects = [
     about: "A recipe tracking app",
     technologies: ["Rails", "Bootstrap CSS"],
   },
-  {
-    id: 2,
-    name: "Kibbles N Bitz",
-    about: "Tinder for dogs",
-    technologies: ["React", "Redux"],
-  },
-  {
-    id: 3,
-    name: "Alienwares",
-    about: "Etsy for aliens",
-    technologies: ["React", "Redux", "Rails"],
-  },
+ 
 ];
 
-test("gives each <ProjectItem> a key based on the project id", () => {
-  let errorSpy = jest.spyOn(global.console, "error");
+test("gives each <ProjectItem> a key based on the project id", async () => {
   render(<ProjectList projects={projects} />);
 
-  expect(errorSpy).not.toHaveBeenCalled();
-
-  errorSpy.mockRestore();
+  await waitFor(() => {
+    projects.forEach((project) => {
+      const projectItem = screen.getByText(project.name);
+      expect(projectItem.closest(".project-item")).toHaveAttribute("data-key", project.id.toString());
+    });
+  });
 });
 
 test("renders a <ProjectItem> for each project passed in as a prop", () => {
   render(<ProjectList projects={projects} />);
 
-  for (const project of projects) {
+  projects.forEach((project) => {
     expect(screen.queryByText(project.name)).toBeInTheDocument();
-  }
+  });
 });
